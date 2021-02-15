@@ -16,16 +16,31 @@ namespace Business.Concrete
         {
             _customerDal = customerDal;
         }
+
         public IResult Add(Customer customer)
         {
+            if (customer.UserId == 0)
+            {
+                return new ErrorResult();
+            }
             _customerDal.Add(customer);
-            return new SuccessResult(Messages.CustomerAdded);
+            return new SuccessResult();
+        }
+
+        public IResult Add(Color color)
+        {
+            throw new NotImplementedException();
         }
 
         public IResult Delete(Customer customer)
         {
             _customerDal.Delete(customer);
-            return new SuccessResult(Messages.CustomerDeleted);
+            return new SuccessResult();
+        }
+
+        public IResult Delete(Color color)
+        {
+            throw new NotImplementedException();
         }
 
         public IDataResult<List<Customer>> GetAll()
@@ -33,15 +48,30 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Customer>>(_customerDal.GetAll());
         }
 
-        public IDataResult<Customer> GetById(int id)
+        public IDataResult<Color> GetById(int id)
         {
-            return new SuccessDataResult<Customer>(_customerDal.Get(c => c.Id == id));
+            throw new NotImplementedException();
+        }
+
+        public IDataResult<List<Customer>> GetCustomerByCompanyName(string companyName)
+        {
+            return new SuccessDataResult<List<Customer>>(_customerDal.GetAll(p => p.CompanyName == companyName));
         }
 
         public IResult Update(Customer customer)
         {
             _customerDal.Update(customer);
-            return new SuccessResult(Messages.CustomerUpdated);
+            return new SuccessResult();
+        }
+
+        public IResult Update(Color color)
+        {
+            throw new NotImplementedException();
+        }
+
+        IDataResult<List<Color>> ICustomerService.GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }

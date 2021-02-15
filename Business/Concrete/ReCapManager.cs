@@ -9,81 +9,44 @@ using System.Text;
 
 namespace Business.Concrete
 {
-    class ReCapManager: IReCapService
+    public class RentalManager : IReCapService
     {
-        IReCapDal _rentalDal;
-        public ReCapManager(IReCapDal rentalDal)
+        IReCapDal _recapDal;
+        public RentalManager(IReCapDal recapDal)
         {
-            _rentalDal = rentalDal;
+            _recapDal = recapDal;
         }
 
-        public IResult Add(ReCap rental)
+        public IResult Add(ReCap recap)
         {
-            List<ReCap> carRentals = _rentalDal.GetAll(r => r.CarId == rental.CarId);
-            if (carRentals.Count == 0)
+            if (recap.ReturnDate == null)
             {
-                _rentalDal.Add(rental);
-                return new SuccessResult(Messages.ReCapAdded);
+                return new ErrorResult();
             }
-            else
-            {
-                foreach (var car in carRentals)
-                {
-                    if (car.ReturnDate == null)
-                    {
-                        return new ErrorResult(Messages.NotReCaptable);
-                    }
-                }
-            }
-            _rentalDal.Add(rental);
-            return new SuccessResult(Messages.ReCapAdded);
-        }
-        public IResult Update(ReCap rental)
-        {
-            List<ReCap> carRentals = _rentalDal.GetAll(r => r.CarId == rental.CarId);
-            if (carRentals.Count == 0)
-            {
-                _rentalDal.Update(rental);
-                return new SuccessResult(Messages.ReCapUpdated);
-            }
-            else
-            {
-                foreach (var car in carRentals)
-                {
-                    if (car.ReturnDate == null)
-                    {
-                        return new ErrorResult(Messages.NotReCaptable);
-                    }
-                }
-            }
-            _rentalDal.Update(rental);
-            return new SuccessResult(Messages.ReCapUpdated);
+            _recapDal.Add(recap);
+            return new SuccessResult();
         }
 
-        public IResult Delete(ReCap rental)
+        public IResult Delete(ReCap recap)
         {
-            _rentalDal.Delete(rental);
-            return new SuccessResult(Messages.ReCapDeleted);
+            _recapDal.Delete(recap);
+            return new SuccessResult();
         }
 
         public IDataResult<List<ReCap>> GetAll()
         {
-            return new SuccessDataResult<List<ReCap>>(_rentalDal.GetAll());
+            return new SuccessDataResult<List<ReCap>>(_recapDal.GetAll());
         }
 
-        public IDataResult<ReCap> GetById(int id)
+        public IDataResult<ReCap> GetById(int rentalId)
         {
-            return new SuccessDataResult<ReCap>(_rentalDal.Get(r => r.Id == id));
+            return new SuccessDataResult<ReCap>(_recapDal.Get(p => p.Id == rentalId));
         }
 
-        IDataResult<List<ReCap>> ICrudService<ReCap>.GetAll()
+        public IResult Update(ReCap recap)
         {
-            throw new NotImplementedException();
-        }
-
-        IDataResult<ReCap> ICrudService<ReCap>.GetById(int id)
-        {
-            throw new NotImplementedException();
+            _recapDal.Update(recap);
+            return new SuccessResult();
         }
 
     }

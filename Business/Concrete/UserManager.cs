@@ -12,12 +12,18 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         IUserDal _userDal;
-        public UserManager(IUserDal userDal)
+
+        public UserManager(IUserDal userdal)
         {
-            _userDal = userDal;
+            _userDal = userdal;
         }
+
         public IResult Add(User user)
         {
+            if (user.FirstName.Length < 2)
+            {
+                return new ErrorResult();
+            }
             _userDal.Add(user);
             return new SuccessResult(Messages.UserAdded);
         }
@@ -25,9 +31,8 @@ namespace Business.Concrete
         public IResult Delete(User user)
         {
             _userDal.Delete(user);
-            return new SuccessResult(Messages.UserDeleted);
+            return new SuccessResult();
         }
-
 
         public IDataResult<List<User>> GetAll()
         {
@@ -36,23 +41,28 @@ namespace Business.Concrete
 
         public IDataResult<User> GetById(int id)
         {
-            return new SuccessDataResult<User>(_userDal.Get(u => u.Id == id));
+            return new SuccessDataResult<User>(_userDal.Get(p => p.Id == id));
+        }
+
+        public IDataResult<User> GetUsersByEmail(string email)
+        {
+            return new SuccessDataResult<User>(_userDal.Get(p => p.Email == email));
+        }
+
+        public IDataResult<List<User>> GetUsersByLastName(string lastName)
+        {
+            return new SuccessDataResult<List<User>>(_userDal.GetAll(p => p.LastName == lastName));
+        }
+
+        public IDataResult<List<User>> GetUsersByFirstName(string firstName)
+        {
+            return new SuccessDataResult<List<User>>(_userDal.GetAll(p => p.FirstName == firstName));
         }
 
         public IResult Update(User user)
         {
             _userDal.Update(user);
-            return new SuccessResult(Messages.UserUpdated);
-        }
-
-        IDataResult<List<User>> ICrudService<User>.GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        IDataResult<User> ICrudService<User>.GetById(int id)
-        {
-            throw new NotImplementedException();
+            return new SuccessResult();
         }
     }
 }

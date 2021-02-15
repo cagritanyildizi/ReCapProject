@@ -6,6 +6,7 @@ using Entities.Concrete;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Business.Concrete
 {
@@ -17,98 +18,69 @@ namespace Business.Concrete
         {
             _carDal = carDal;
         }
+
         public IResult Add(Car car)
         {
-
-            if (car.Description.Length > 1 && car.DailyPrice > 0)
+            if (car.DailyPrice <= 0)
             {
-                _carDal.Add(car);
-                return new SuccessResult(Messages.CarAdded);
-
+                return new ErrorResult(Messages.DailyPriceError);
             }
-            else
-            {
-                if (car.Description.Length < 2) Console.WriteLine("Tanım 2 karakterden az olamaz.");
-                if (car.DailyPrice < 0) Console.WriteLine("0 TL den büyük bir değer giriniz.");
-                return new ErrorResult(Messages.CArNameInvalid);
-            }
-
+            _carDal.Add(car);
+            return new SuccessResult(Messages.CarAdded);
 
         }
+
         public IResult Delete(Car car)
         {
-            _carDal.Add(car);
-            return new SuccessResult(Messages.CarsDeleted);
-
-
+            _carDal.Delete(car);
+            return new SuccessResult(Messages.CarDeleted);
         }
-        public IResult Update(Car car)
-        {
-            _carDal.Add(car);
-            return new SuccessResult(Messages.CarsUpdated);
 
-        }
         public IDataResult<List<Car>> GetAll()
         {
-            if (DateTime.Now.Hour == 21)
-            {
-                return new ErrorDataResult<List<Car>>(Messages.MaintenanceTime);
-            }
             return new SuccessDataResult<List<Car>>(_carDal.GetAll(), Messages.CarsListed);
         }
 
-        public IDataResult<List<Car>> GetCarsByBrandId(int id)
+        public IDataResult<List<Car>> GetByDailyPrice(decimal min, decimal max)
         {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(c => c.BrandId == id));
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.DailyPrice >= min && p.DailyPrice <= max), Messages.CarsListed);
         }
 
-        public IDataResult<List<Car>> GetCarsByColorId(int id)
+        public IDataResult<List<Car>> GetByModelYear(short minYear, short maxYear)
         {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(c => c.ColorId == id));
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.ModelYear >= minYear && p.ModelYear <= maxYear), Messages.CarsListed);
         }
+
+        public IDataResult<List<Car>> GetCarsByBrandId(int brandId)
+        {
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.BrandId == brandId), Messages.CarsListed);
+        }
+
+        public IDataResult<List<Car>> GetCarsByColorId(int colorId)
+        {
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.ColorId == colorId), Messages.CarsListed);
+        }
+
+        public IResult Update(Car car)
+        {
+            _carDal.Update(car);
+            return new SuccessResult(Messages.CarUpdated);
+        }
+
+        public IDataResult<Car> GetById(int id)
+        {
+            return new SuccessDataResult<Car>(_carDal.Get(p => p.Id == id), Messages.CarsListed);
+        }
+
         public IDataResult<List<CarDetailDto>> GetCarDetails()
         {
-            return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarDetails());
+            return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarDetail(), Messages.GetCarDetails);
         }
 
-        public IDataResult<List<Car>> GetCarsByDailyPrice(decimal min, decimal max)
-        {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(c => c.DailyPrice >= min && c.DailyPrice <= max));
-        }
-
-        List<Car> ICarService.GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        List<CarDetailDto> ICarService.GetCarsByBrandId(int carDetailDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        List<CarDetailDto> ICarService.GetCarsByColorId(int carDetailDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ICarService.Add(Car car)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ICarService.Delete(Car car)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ICarService.Update(Car car)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<CarDetailDto> GetCarDetailDto()
+        public IDataResult<List<Car>> GetByModelYear(int year)
         {
             throw new NotImplementedException();
         }
     }
+
 }
