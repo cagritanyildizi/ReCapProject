@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -16,62 +18,46 @@ namespace Business.Concrete
         {
             _customerDal = customerDal;
         }
-
-        public IResult Add(Customer customer)
+        [ValidationAspect(typeof(CustomerValidator))]
+        public IResult Add(Customer customers)
         {
-            if (customer.UserId == 0)
+            _customerDal.Add(customers);
+            return new SuccessResult(Messages.CustomerAdded);
+        }
+
+        public IResult Delete(Customer customers)
+        {
+            _customerDal.Delete(customers);
+            return new SuccessResult(Messages.CustomerDeleted);
+        }
+
+        public IDataResult<List<Customer>> GetAllCustomers()
+        {
+            if (DateTime.Now.Hour == 23)
             {
-                return new ErrorResult();
+                return new ErrorDataResult<List<Customer>>(Messages.MaintenanceTime);
             }
-            _customerDal.Add(customer);
-            return new SuccessResult();
+            return new SuccessDataResult<List<Customer>>(_customerDal.GetAll(), Messages.CustomerAdded);
         }
 
-        public IResult Add(Color color)
+        public IDataResult<Customer> GetByCompanyName(string companyName)
         {
-            throw new NotImplementedException();
+            if (DateTime.Now.Hour == 23)
+            {
+                return new ErrorDataResult<Customer>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<Customer>(_customerDal.Get(p => p.CompanyName.Contains(companyName)), Messages.CustomerAdded);
         }
 
-        public IResult Delete(Customer customer)
+        public IResult Update(Customer customers)
         {
-            _customerDal.Delete(customer);
-            return new SuccessResult();
+            _customerDal.Update(customers);
+            return new SuccessResult(Messages.UserUpdated);
         }
 
-        public IResult Delete(Color color)
+        IDataResult<Customer> ICustomerService.GetByCompanyName(string companyName)
         {
-            throw new NotImplementedException();
-        }
-
-        public IDataResult<List<Customer>> GetAll()
-        {
-            return new SuccessDataResult<List<Customer>>(_customerDal.GetAll());
-        }
-
-        public IDataResult<Color> GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDataResult<List<Customer>> GetCustomerByCompanyName(string companyName)
-        {
-            return new SuccessDataResult<List<Customer>>(_customerDal.GetAll(p => p.CompanyName == companyName));
-        }
-
-        public IResult Update(Customer customer)
-        {
-            _customerDal.Update(customer);
-            return new SuccessResult();
-        }
-
-        public IResult Update(Color color)
-        {
-            throw new NotImplementedException();
-        }
-
-        IDataResult<List<Color>> ICustomerService.GetAll()
-        {
-            throw new NotImplementedException();
+            return new SuccessDataResult<Customer>(_customerDal.Get(p => p.CompanyName.Contains(companyName)), Messages.CustomerAdded);
         }
     }
 }

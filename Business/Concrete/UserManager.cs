@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -12,57 +14,45 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         IUserDal _userDal;
-
-        public UserManager(IUserDal userdal)
+        public UserManager(IUserDal userDal)
         {
-            _userDal = userdal;
+            _userDal = userDal;
         }
-
-        public IResult Add(User user)
+        [ValidationAspect(typeof(UserValidator))]
+        public IResult Add(User users)
         {
-            if (user.FirstName.Length < 2)
+            if (users.Email.Contains("@"))
             {
-                return new ErrorResult();
+                _userDal.Add(users);
+                return new SuccessResult(Messages.UserAdded);
             }
-            _userDal.Add(user);
-            return new SuccessResult(Messages.UserAdded);
+            return new ErrorResult(Messages.MailInvalid);
         }
 
-        public IResult Delete(User user)
+        public IResult Delete(User users)
         {
-            _userDal.Delete(user);
-            return new SuccessResult();
+            _userDal.Delete(users);
+            return new SuccessResult(Messages.UserDeleted);
         }
 
-        public IDataResult<List<User>> GetAll()
+        public IDataResult<List<User>> GetAllUsers()
         {
-            return new SuccessDataResult<List<User>>(_userDal.GetAll());
+            if (DateTime.Now.Hour == 23)
+            {
+                return new ErrorDataResult<List<User>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<User>>(Messages.UserListed);
         }
 
-        public IDataResult<User> GetById(int id)
+        public IDataResult<List<User>> GetByIdUsers(int id)
         {
-            return new SuccessDataResult<User>(_userDal.Get(p => p.Id == id));
+            return new SuccessDataResult<List<User>>(_userDal.GetAll(p => p.UserId == id), Messages.UserListed);
         }
-
-        public IDataResult<User> GetUsersByEmail(string email)
+        [ValidationAspect(typeof(UserValidator))]
+        public IResult Update(User users)
         {
-            return new SuccessDataResult<User>(_userDal.Get(p => p.Email == email));
-        }
-
-        public IDataResult<List<User>> GetUsersByLastName(string lastName)
-        {
-            return new SuccessDataResult<List<User>>(_userDal.GetAll(p => p.LastName == lastName));
-        }
-
-        public IDataResult<List<User>> GetUsersByFirstName(string firstName)
-        {
-            return new SuccessDataResult<List<User>>(_userDal.GetAll(p => p.FirstName == firstName));
-        }
-
-        public IResult Update(User user)
-        {
-            _userDal.Update(user);
-            return new SuccessResult();
+            _userDal.Update(users);
+            return new SuccessResult(Messages.UserUpdated);
         }
     }
 }

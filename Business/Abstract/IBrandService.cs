@@ -8,10 +8,10 @@ namespace Business.Abstract
 {
     public interface IBrandService
     {
-        IResult Add(Color color);
-        IResult Update(Color color);
-        IResult Delete(Color color);
-        IDataResult<List<Color>> GetAll();
-        IDataResult<Color> GetById(int id);
+        IResult Add(Brand brand);
+        IResult Update(Brand brand);
+        IResult Delete(Brand brand);
+        IDataResult<List<Brand>> GetAll();
+        IDataResult<List<Brand>> GetCarsByBrandId(int id);
     }
 }

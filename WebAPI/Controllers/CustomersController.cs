@@ -1,7 +1,4 @@
 ﻿using Business.Abstract;
-using Business.Constants;
-using Core.Utilities.Results;
-using DataAccess.Abstract;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,72 +11,61 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReCapsController : ControllerBase
+    public class CustomersController : ControllerBase
     {
-        IReCapService _recapService;
-
-        public ReCapsController(IReCapService recapService)
+        ICustomerService _customerService;
+        public CustomersController(ICustomerService customerService)
         {
-            _recapService = recapService;
+            _customerService = customerService;
         }
-
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpGet("getallcustomers")]
+        public IActionResult GetAllCustomers()
         {
-            var result = _recapService.GetAll();
+            var result = _customerService.GetAllCustomers();
             if (result.Success)
             {
                 return Ok(result);
             }
-
             return BadRequest(result);
         }
-
-        [HttpGet("getbyid")]
-        public IActionResult GetById(int id)
+        [HttpGet("getbycompanycame")]
+        public IActionResult GetByCompanyName(string cname)
         {
-            var result = _recapService.GetById(id);
+            var result = _customerService.GetByCompanyName(cname);
             if (result.Success)
             {
                 return Ok(result);
             }
-
             return BadRequest(result);
         }
-
-        [HttpPost("Add")]
-        public IActionResult Add(ReCap rental)
+        [HttpPost("add")]
+        public IActionResult Add(Customer customer)
         {
-            var result = _recapService.Add(rental);
+            var result = _customerService.Add(customer);
             if (result.Success)
             {
                 return Ok(result);
             }
-
             return BadRequest(result);
         }
-
-        [HttpPut("update")]
-        public IActionResult Update(ReCap rental)
+        [HttpPost("delete")]
+        public IActionResult Delete(Customer customer)
         {
-            var result = _recapService.Update(rental);
+            var result = _customerService.Delete(customer);
             if (result.Success)
             {
                 return Ok(result);
             }
-
             return BadRequest(result);
         }
-
-        [HttpDelete("delete")]
-        public IActionResult Delete(ReCap rental)
+        [HttpPost("update")]
+        public IActionResult Update(Customer customer)
         {
-            var result = _recapService.Delete(rental);
+            var result = _customerService.Update(customer);
             if (result.Success)
             {
                 return Ok(result);
             }
-
             return BadRequest(result);
         }
     }
