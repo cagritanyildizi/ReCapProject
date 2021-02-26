@@ -10,7 +10,7 @@ namespace Business.Constants
         public static string CarAdded = "Araç eklendi";
         public static string CarsDeleted = "Araç bilgileri silindi";
         public static string CarsUpdated = "Araç bilgileri güncellendi";
-        public static string CArNameInvalid = "Araç ismi geçersiz";
+        public static string CarNameInvalid = "Araç ismi geçersiz";
         public static string MaintenanceTime = "Sistem bakımda";
         public static string CarsListed = "Araçlar listelendi";
         public static string UserAdded = "Kullanıcı eklendi";
@@ -38,8 +38,10 @@ namespace Business.Constants
         public static string ColorNameInvalid = "Renk ismi geçersiz";
         //  public static string CustomerUpdated = "Araç Güncellendi";
 
+        public static string CarImageCountError = "Araba görseli en az 5 olmalıdır.";
 
 
-
+        public static string GetId = "Id'ye Ait Bilgi Getirildi.";
+        public static string GetAll = "Tümü Listelendi..";
     }
 }

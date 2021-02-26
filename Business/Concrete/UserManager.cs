@@ -35,6 +35,11 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserDeleted);
         }
 
+        public IDataResult<List<User>> GetAll()
+        {
+            return new SuccessDataResult<List<User>>((_userDal.GetAll()), Messages.GetAll);
+        }
+
         public IDataResult<List<User>> GetAllUsers()
         {
             if (DateTime.Now.Hour == 23)

@@ -41,7 +41,7 @@ namespace Business.Concrete
 
             if (result.Count > 0)
             {
-                return new ErrorResult(Messages.CArNameInvalid);
+                return new ErrorResult(Messages.CarNameInvalid);
             }
             return new SuccessResult(Messages.CarRental);
         }

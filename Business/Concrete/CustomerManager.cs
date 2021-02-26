@@ -31,6 +31,11 @@ namespace Business.Concrete
             return new SuccessResult(Messages.CustomerDeleted);
         }
 
+        public IDataResult<Customer> Get(int CustomerId)
+        {
+            return new SuccessDataResult<Customer>(_customerDal.Get(c => c.CustomerId == CustomerId), Messages.GetId);
+        }
+
         public IDataResult<List<Customer>> GetAllCustomers()
         {
             if (DateTime.Now.Hour == 23)
@@ -38,6 +43,11 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<Customer>>(Messages.MaintenanceTime);
             }
             return new SuccessDataResult<List<Customer>>(_customerDal.GetAll(), Messages.CustomerAdded);
+        }
+
+        public IDataResult<List<Customer>> GetAll()
+        {
+            return new SuccessDataResult<List<Customer>>(_customerDal.GetAll(), Messages.GetAll);
         }
 
         public IDataResult<Customer> GetByCompanyName(string companyName)
